@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -35,6 +37,7 @@ public class MainActivity extends Activity {
     private ImageAdapter mImageAdapter;
     private RelativeLayout mFullScreenLayout;
     private ImageView mFullScreenImageView;
+    private TextView mFullScreenTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class MainActivity extends Activity {
 
         mFullScreenLayout = (RelativeLayout) findViewById(R.id.photoView);
         mFullScreenImageView = (ImageView) findViewById(R.id.fullImage);
+        mFullScreenTextView = (TextView) findViewById(R.id.textDescription);
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         mImageAdapter = new ImageAdapter(this);
@@ -73,6 +77,7 @@ public class MainActivity extends Activity {
 
     public void populateFullScreen(int position) {
         mFullScreenImageView.setImageBitmap(mImageAdapter.getBitmap(position));
+        mImageAdapter.getPhoto(position).updateFullScreenInfo(mFullScreenTextView);
     }
 
     public void getPopularPhotos() /* throws JSONException */ {
@@ -90,16 +95,8 @@ public class MainActivity extends Activity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
                 try {
-                    // Parse the response, only need photo urls.
-                    JSONArray photos = response.getJSONArray("photos");
-                    ArrayList<String> urlList = new ArrayList<String>();
-                    for (int i = 0; i < photos.length(); i++) {
-                        /* TODO: gather more data here */
-
-                        urlList.add(photos.getJSONObject(i).getString("image_url"));
-                    }
-
-                    new DownloadImageTask().execute(urlList);
+                    // Parse the response into list of photo objects -- passes that on post to image adapter.
+                    new ParseAndDownloadImageTask().execute(response.getJSONArray("photos"));
 
                 } catch (JSONException e) {
                     System.out.println(DEBUG_JSON + e);
@@ -125,32 +122,47 @@ public class MainActivity extends Activity {
             }
         });
     }
-// TODO: optimal data structs .. ?
-    private class DownloadImageTask extends AsyncTask<ArrayList<String>, Void, ArrayList<Bitmap>> {
 
-        public DownloadImageTask() {
+    private class ParseAndDownloadImageTask extends AsyncTask<JSONArray, Void, ArrayList<Photo>> {
+
+        public ParseAndDownloadImageTask() {
             // Nothing to do
         }
 
-        protected ArrayList<Bitmap> doInBackground(ArrayList<String>... urls) {
-            ArrayList<String> urlList = new ArrayList<String>();
-            ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
-            urlList = urls[0];
+        protected ArrayList<Photo> doInBackground(JSONArray... photoInfo) {
+            JSONArray photoJSON = photoInfo[0];
+            ArrayList<Photo> photos = new ArrayList<Photo>();
+            Bitmap bitmap;
+            String url, name, desc, uploader;
+            int votes;
 
             try {
-                for (int i = 0; i < urlList.size(); i++) {
-                    String url = urlList.get(i);
+                for (int i = 0; i < photoJSON.length(); i++) {
+                    // Bitmap
+                    url = photoJSON.getJSONObject(i).getString("image_url");
                     InputStream in = new java.net.URL(url).openStream();
-                    bitmapArray.add(BitmapFactory.decodeStream(in));
+                    bitmap = BitmapFactory.decodeStream(in);
+                    // Name
+                    name = photoJSON.getJSONObject(i).getString("name");
+                    // description
+                    desc = photoJSON.getJSONObject(i).getString("description");
+                    // uploader
+                    uploader = photoJSON.getJSONObject(i).getJSONObject("user").getString("username");
+                    // votes
+                    votes = Integer.getInteger(photoJSON.getJSONObject(i).getString("votes_count"));
+
+                    // Create new object here. Add to list
+                    photos.add(new Photo(bitmap, name, desc, uploader, votes));
                 }
             } catch (Exception e) {
                 Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
-            return bitmapArray;
+
+            return photos;
         }
 
-        protected void onPostExecute(ArrayList<Bitmap> resultList) {
+        protected void onPostExecute(ArrayList<Photo> resultList) {
             mImageAdapter.set(resultList);
             mImageAdapter.notifyDataSetChanged();
             Toast.makeText(getBaseContext(), "Download Complete", Toast.LENGTH_SHORT).show();
@@ -159,6 +171,11 @@ public class MainActivity extends Activity {
 }
 
 /* TODO list:
+ *
+ * Need a data manager for pagination
+ *
+ * create object for photo and data --> hold bitmap
+ *  load this info in the asynch task --> don't want to aprse json in the UI thread
  *
  * change adding images from list to single url at a time
  *

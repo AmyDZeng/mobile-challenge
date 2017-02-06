@@ -14,14 +14,14 @@ import java.util.ArrayList;
 
 public class ImageAdapter extends BaseAdapter {
 
-    private ArrayList<Bitmap> mBitmapArray;
+    private ArrayList<Photo> mPhotoArray;
 
     private Context mContext;
     private int mScreenWidth, mScreenHeight;
 
     public ImageAdapter(Context c) {
         mContext = c;
-        mBitmapArray = new ArrayList<Bitmap>();
+        mPhotoArray = new ArrayList<Photo>();
 
         // Grab dimensions
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -31,16 +31,20 @@ public class ImageAdapter extends BaseAdapter {
         mScreenHeight = displayMetrics.heightPixels;
     }
 
-    public void set(ArrayList<Bitmap> bitmapList) {
-        mBitmapArray = new ArrayList<Bitmap>(bitmapList);
+    public void set(ArrayList<Photo> photoList) {
+        mPhotoArray = new ArrayList<Photo>(photoList);
     }
 
     public Bitmap getBitmap(int position) {
-        return mBitmapArray.get(position);
+        return mPhotoArray.get(position).getBitmap();
+    }
+
+    public Photo getPhoto(int position) {
+        return mPhotoArray.get(position);
     }
 
     public int getCount() {
-        return mBitmapArray.size();
+        return mPhotoArray.size();
     }
 
     public Object getItem(int position) {
@@ -64,7 +68,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageBitmap(mBitmapArray.get(position));
+        imageView.setImageBitmap(mPhotoArray.get(position).getBitmap());
         return imageView;
     }
 }
