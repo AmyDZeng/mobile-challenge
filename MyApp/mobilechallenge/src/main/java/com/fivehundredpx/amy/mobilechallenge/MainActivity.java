@@ -12,6 +12,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -32,12 +33,17 @@ public class MainActivity extends Activity {
 
     private String DEBUG_JSON = "DEBUG_JSON/";
     private ImageAdapter mImageAdapter;
+    private RelativeLayout mFullScreenLayout;
+    private ImageView mFullScreenImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         super.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
+        mFullScreenLayout = (RelativeLayout) findViewById(R.id.photoView);
+        mFullScreenImageView = (ImageView) findViewById(R.id.fullImage);
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         mImageAdapter = new ImageAdapter(this);
@@ -48,7 +54,19 @@ public class MainActivity extends Activity {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                // TODO: Full screen
+                // TODO: update with info as well
+                mFullScreenImageView.setImageBitmap(mImageAdapter.getBitmap(position));
+                mFullScreenLayout.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        mFullScreenLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: reset image as well?
+                // TODO: disable touch events? necessary?
+                mFullScreenLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -90,11 +108,13 @@ public class MainActivity extends Activity {
 
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, java.lang.String responseString, java.lang.Throwable throwable) {
+                Toast.makeText(getBaseContext(), "Error Downloading, check internet connection", Toast.LENGTH_SHORT).show();
                 System.out.println(DEBUG_JSON + statusCode);
             }
 
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, java.lang.Throwable throwable, JSONObject response) {
+                Toast.makeText(getBaseContext(), "Error Downloading, check internet connection", Toast.LENGTH_SHORT).show();
                 System.out.println(DEBUG_JSON + statusCode);
             }
         });

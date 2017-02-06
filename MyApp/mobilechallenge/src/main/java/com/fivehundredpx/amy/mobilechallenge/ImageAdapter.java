@@ -35,6 +35,10 @@ public class ImageAdapter extends BaseAdapter {
         mBitmapArray = new ArrayList<Bitmap>(bitmapList);
     }
 
+    public Bitmap getBitmap(int position) {
+        return mBitmapArray.get(position);
+    }
+
     public int getCount() {
         return mBitmapArray.size();
     }
