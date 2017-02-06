@@ -153,9 +153,9 @@ public class MainActivity extends Activity {
 }
 
 /* TODO list:
- * Populate adapter with actual pics
- * Only need photo information
- * request for popular photos: "GET /v1/photos?consumer_key=3xpH2xqdDBbJFSAjVuQCIma2RvOyWFOusJvY61RW&feature=popular&sort=created_at&image_size=3&include_store=store_download&include_states=voted HTTP/1.1"
  *
+ * display information on fullscreen
+ *
+ * control number of images per page
  * Pagination --> design choice?
  */
