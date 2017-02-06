@@ -1,6 +1,7 @@
 package com.fivehundredpx.amy.mobilechallenge;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,14 +10,18 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 public class ImageAdapter extends BaseAdapter {
+
+    private ArrayList<Bitmap> mBitmapArray;
+
     private Context mContext;
     private int mScreenWidth, mScreenHeight;
-    // TODO: tmp, replace with real value
-    private int numPhotos = 20;
 
     public ImageAdapter(Context c) {
         mContext = c;
+        mBitmapArray = new ArrayList<Bitmap>();
 
         // Grab dimensions
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -26,8 +31,12 @@ public class ImageAdapter extends BaseAdapter {
         mScreenHeight = displayMetrics.heightPixels;
     }
 
+    public void set(ArrayList<Bitmap> bitmapList) {
+        mBitmapArray = new ArrayList<Bitmap>(bitmapList);
+    }
+
     public int getCount() {
-        return numPhotos;
+        return mBitmapArray.size();
     }
 
     public Object getItem(int position) {
@@ -51,7 +60,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageResource(R.drawable.nick_cage_tn);
+        imageView.setImageBitmap(mBitmapArray.get(position));
         return imageView;
     }
 }

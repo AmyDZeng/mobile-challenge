@@ -1,13 +1,18 @@
 package com.fivehundredpx.amy.mobilechallenge;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -15,11 +20,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+
 import cz.msebera.android.httpclient.Header;
+
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
     private String DEBUG_JSON = "DEBUG_JSON/";
+    private ImageAdapter mImageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
-        gridview.setAdapter(new ImageAdapter(this));
+        mImageAdapter = new ImageAdapter(this);
+        gridview.setAdapter(mImageAdapter);
 
         getPopularPhotos();
 
@@ -55,7 +67,15 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 // If the response is JSONObject instead of expected JSONArray
                 try {
+                    // Parse the response, only need photo urls.
                     JSONArray photos = response.getJSONArray("photos");
+                    ArrayList<String> urlList = new ArrayList<String>();
+                    for (int i = 0; i < photos.length(); i++) {
+                        urlList.add(photos.getJSONObject(i).getString("image_url"));
+                    }
+
+                    new DownloadImageTask().execute(urlList);
+
                 } catch (JSONException e) {
                     System.out.println(DEBUG_JSON + e);
                 }
@@ -65,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray photos) {
                 // Won't be called
-
             }
 
             @Override
@@ -79,9 +98,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+// TODO: optimal data structs .. ?
+    private class DownloadImageTask extends AsyncTask<ArrayList<String>, Void, ArrayList<Bitmap>> {
+
+        public DownloadImageTask() {
+            // Nothing to do
+        }
+
+        protected ArrayList<Bitmap> doInBackground(ArrayList<String>... urls) {
+            ArrayList<String> urlList = new ArrayList<String>();
+            ArrayList<Bitmap> bitmapArray = new ArrayList<Bitmap>();
+            urlList = urls[0];
+
+            try {
+                for (int i = 0; i < urlList.size(); i++) {
+                    String url = urlList.get(i);
+                    InputStream in = new java.net.URL(url).openStream();
+                    bitmapArray.add(BitmapFactory.decodeStream(in));
+                }
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return bitmapArray;
+        }
+
+        protected void onPostExecute(ArrayList<Bitmap> resultList) {
+            mImageAdapter.set(resultList);
+            mImageAdapter.notifyDataSetChanged();
+            Toast.makeText(getBaseContext(), "Download Complete", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
 
-/* Checklist:
+/* TODO list:
  * Populate adapter with actual pics
+ * Only need photo information
  * request for popular photos: "GET /v1/photos?consumer_key=3xpH2xqdDBbJFSAjVuQCIma2RvOyWFOusJvY61RW&feature=popular&sort=created_at&image_size=3&include_store=store_download&include_states=voted HTTP/1.1"
+ *
+ * Pagination --> design choice?
  */
