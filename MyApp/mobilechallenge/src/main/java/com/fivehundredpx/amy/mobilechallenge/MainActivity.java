@@ -153,9 +153,15 @@ public class MainActivity extends Activity {
 }
 
 /* TODO list:
- *
+ * (its a WIP)
  * display information on fullscreen
+ * Info we want:
+ *      - name --> "name"
+ *      - uploader --> "user" json --> "username"
+ *      - Votes --> "votes_count"
+ *      - caption --> "dexcription"
+ *      - optionally: comments
  *
  * control number of images per page
- * Pagination --> design choice?
+ * Pagination
  */
