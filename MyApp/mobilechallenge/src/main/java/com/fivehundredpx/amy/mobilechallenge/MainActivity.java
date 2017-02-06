@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 // TODO: update with info as well
-                mFullScreenImageView.setImageBitmap(mImageAdapter.getBitmap(position));
+                populateFullScreen(position);
                 mFullScreenLayout.setVisibility(View.VISIBLE);
 
             }
@@ -69,6 +69,10 @@ public class MainActivity extends Activity {
                 mFullScreenLayout.setVisibility(View.GONE);
             }
         });
+    }
+
+    public void populateFullScreen(int position) {
+        mFullScreenImageView.setImageBitmap(mImageAdapter.getBitmap(position));
     }
 
     public void getPopularPhotos() /* throws JSONException */ {
@@ -90,6 +94,8 @@ public class MainActivity extends Activity {
                     JSONArray photos = response.getJSONArray("photos");
                     ArrayList<String> urlList = new ArrayList<String>();
                     for (int i = 0; i < photos.length(); i++) {
+                        /* TODO: gather more data here */
+
                         urlList.add(photos.getJSONObject(i).getString("image_url"));
                     }
 
@@ -153,7 +159,9 @@ public class MainActivity extends Activity {
 }
 
 /* TODO list:
- * (its a WIP)
+ *
+ * change adding images from list to single url at a time
+ *
  * display information on fullscreen
  * Info we want:
  *      - name --> "name"
@@ -164,4 +172,5 @@ public class MainActivity extends Activity {
  *
  * control number of images per page
  * Pagination
+ * re-try on failure
  */
