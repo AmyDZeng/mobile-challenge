@@ -1,5 +1,6 @@
 package com.fivehundredpx.amy.mobilechallenge;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -27,7 +28,7 @@ import cz.msebera.android.httpclient.Header;
 
 import static java.security.AccessController.getContext;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private String DEBUG_JSON = "DEBUG_JSON/";
     private ImageAdapter mImageAdapter;
