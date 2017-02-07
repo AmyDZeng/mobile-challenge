@@ -32,7 +32,7 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends FragmentActivity {
 
     private final String DEBUG_JSON = "DEBUG_JSON/";
-    private final int RESULTS_PER_PAGE = 5;
+    private final int RESULTS_PER_PAGE = 15;
 
     private int mCurrentPage = 1;
     private int mNumberPages = 1;
@@ -72,7 +72,7 @@ public class MainActivity extends FragmentActivity {
                 // Go back
                 if (mCurrentPage > 1) {
                     // TODO: need to have data cache -- at least 2 pages ahead of current. When to re-enable button? at end of cache page function ... ?
-                    // mLeftButton.setEnabled(false);
+                    mLeftButton.setEnabled(false);
                     mCurrentPage -= 1;
                     mImageAdapter.invalidateData();
                     getAllPopularPhotos();
@@ -87,7 +87,7 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
                 // Go forward
                 if (mCurrentPage <= mNumberPages) {
-                    // mRightButton.setEnabled(false);
+                    mRightButton.setEnabled(false);
                     mCurrentPage += 1;
                     mImageAdapter.invalidateData();
                     getAllPopularPhotos();
@@ -122,7 +122,7 @@ public class MainActivity extends FragmentActivity {
             mGridview.setSelection(mViewPager.getCurrentItem());
         }
     }
-
+// TODO: modularize data fetch, parse, and display. pass in "display" parameter?
     public void getAllPopularPhotos() /* throws JSONException */ {
 
         RequestParams params = new RequestParams();
@@ -209,9 +209,15 @@ public class MainActivity extends FragmentActivity {
 
         protected void onPostExecute(Photo result) {
             if (result != null) {
+                // TODO: add in if we're on current page, display. Otherwise just cache?
                 mImageAdapter.add(result);
                 mImageAdapter.notifyDataSetChanged();
                 mPagerAdapter.notifyDataSetChanged(); // Necessary since we're using mImageAdapters data
+            }
+            if (mImageAdapter.getCount() >= RESULTS_PER_PAGE) {
+                // We're finished loading the current page, re-enable buttons
+                mLeftButton.setEnabled(true);
+                mRightButton.setEnabled(true);
             }
         }
     }
