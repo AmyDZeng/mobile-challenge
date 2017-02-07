@@ -71,7 +71,7 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
                 // Go back
                 if (mCurrentPage > 1) {
-                    mLeftButton.setEnabled(false);
+                    setPaginateButtonsEnable(false);
                     mCurrentPage -= 1;
                     mImageAdapter.invalidateData();
                     mPagerAdapter.notifyDataSetChanged();
@@ -87,7 +87,7 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
                 // Go forward
                 if (mCurrentPage < mNumberPages) {
-                    mRightButton.setEnabled(false);
+                    setPaginateButtonsEnable(false);
                     mCurrentPage += 1;
                     mImageAdapter.invalidateData();
                     mPagerAdapter.notifyDataSetChanged();
@@ -109,6 +109,11 @@ public class MainActivity extends FragmentActivity {
         });
 
         getAllPopularPhotos();
+    }
+
+    public void setPaginateButtonsEnable(boolean enable) {
+        mLeftButton.setEnabled(enable);
+        mRightButton.setEnabled(enable);
     }
 
     @Override
@@ -216,8 +221,7 @@ public class MainActivity extends FragmentActivity {
             }
             if (mImageAdapter.getCount() >= RESULTS_PER_PAGE) {
                 // We're finished loading the current page, re-enable buttons
-                mLeftButton.setEnabled(true);
-                mRightButton.setEnabled(true);
+                setPaginateButtonsEnable(true);
             }
         }
     }

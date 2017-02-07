@@ -36,6 +36,7 @@
             android:textColor="@color/white"
             android:textSize="25dp"
             android:layout_weight="1"
+            android:enabled="false"
             />
         <Button
             android:id="@+id/rightButton"
@@ -45,6 +46,7 @@
             android:textColor="@color/white"
             android:textSize="25dp"
             android:layout_weight="1"
+            android:enabled="false"
             />
     </LinearLayout>
 
