@@ -71,7 +71,6 @@ public class MainActivity extends FragmentActivity {
             public void onClick(View v) {
                 // Go back
                 if (mCurrentPage > 1) {
-                    // TODO: need to have data cache -- at least 2 pages ahead of current. When to re-enable button? at end of cache page function ... ?
                     mLeftButton.setEnabled(false);
                     mCurrentPage -= 1;
                     mImageAdapter.invalidateData();
@@ -87,7 +86,7 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 // Go forward
-                if (mCurrentPage <= mNumberPages) {
+                if (mCurrentPage < mNumberPages) {
                     mRightButton.setEnabled(false);
                     mCurrentPage += 1;
                     mImageAdapter.invalidateData();
@@ -124,7 +123,7 @@ public class MainActivity extends FragmentActivity {
             mGridview.setSelection(mViewPager.getCurrentItem());
         }
     }
-// TODO: modularize data fetch, parse, and display. pass in "display" parameter?
+
     public void getAllPopularPhotos() /* throws JSONException */ {
 
         RequestParams params = new RequestParams();
@@ -211,7 +210,6 @@ public class MainActivity extends FragmentActivity {
 
         protected void onPostExecute(Photo result) {
             if (result != null) {
-                // TODO: add in if we're on current page, display. Otherwise just cache?
                 mImageAdapter.add(result);
                 mImageAdapter.notifyDataSetChanged();
                 mPagerAdapter.notifyDataSetChanged(); // Necessary since we're using mImageAdapters data
@@ -253,7 +251,12 @@ public class MainActivity extends FragmentActivity {
 /* TODO list:
  *
  * P1:
+ *
+ *      Data cache
+ *
  *      Pagination
+ *      // TODO: need to have data cache -- at least 2 pages ahead of current. When to re-enable button? at end of cache page function ... ?
+ *      // TODO: consider passing in 'display' parameter into getAllPopularPhotos(). separate grabbing data and displaying it.
  *          grid and full screen? Probably both
  *          two components:
  *              replace fullscreen imageview with viewpager to page through -- data remains in imageadapter, no need to consolidate into its own manager
