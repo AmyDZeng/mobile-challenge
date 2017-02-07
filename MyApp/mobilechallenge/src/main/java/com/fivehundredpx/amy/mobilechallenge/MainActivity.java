@@ -130,33 +130,39 @@ public class MainActivity extends Activity {
         }
 
         protected ArrayList<Photo> doInBackground(JSONArray... photoInfo) {
-            JSONArray photoJSON = photoInfo[0];
-            ArrayList<Photo> photos = new ArrayList<Photo>();
+            JSONArray photoJSONArray = photoInfo[0];
+            ArrayList<Photo> photos = new ArrayList<>();
             Bitmap bitmap;
             String url, name, desc, uploader;
+            JSONObject photoJSONObj;
             int votes;
 
-            try {
-                for (int i = 0; i < photoJSON.length(); i++) {
+            for (int i = 0; i < photoJSONArray.length(); i++) {
+                try {
+                    photoJSONObj = photoJSONArray.getJSONObject(i);
+
                     // Bitmap
-                    url = photoJSON.getJSONObject(i).getString("image_url");
+                    url = photoJSONObj.getString("image_url");
                     InputStream in = new java.net.URL(url).openStream();
                     bitmap = BitmapFactory.decodeStream(in);
+                    if (bitmap == null) continue;
+
                     // Name
-                    name = photoJSON.getJSONObject(i).getString("name");
-                    // description
-                    desc = photoJSON.getJSONObject(i).getString("description");
-                    // uploader
-                    uploader = photoJSON.getJSONObject(i).getJSONObject("user").getString("username");
-                    // votes
-                    votes = Integer.getInteger(photoJSON.getJSONObject(i).getString("votes_count"));
+                    name = photoJSONObj.isNull("name") ? "" : photoJSONObj.getString("name");
+                    // Description
+                    desc = photoJSONObj.isNull("description") ? "" : photoJSONObj.getString("description");
+                    // Uploader
+                    uploader = photoJSONObj.getJSONObject("user").isNull("username") ?
+                            "Anon" : photoJSONObj.getJSONObject("user").getString("username");
+                    // Votes
+                    votes = photoJSONObj.isNull("votes_count") ? 0 : Integer.parseInt(photoJSONObj.getString("votes_count"));
 
                     // Create new object here. Add to list
                     photos.add(new Photo(bitmap, name, desc, uploader, votes));
+                } catch (Exception e) {
+                    Log.e("Error", e.getMessage());
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
             }
 
             return photos;

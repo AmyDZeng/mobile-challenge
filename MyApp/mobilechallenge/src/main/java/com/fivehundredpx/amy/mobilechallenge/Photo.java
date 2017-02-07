@@ -24,7 +24,7 @@ public class Photo {
     public void updateFullScreenInfo(TextView textView) {
         String myText = "";
         myText += mName;
-        myText += "\nBy: " + (mUploader == null? "Anonymous" : mUploader);
+        myText += "\nBy: " + mUploader;
         myText += "\n" + mDescription;
         myText += "\n\nVotes: " + mVotes;
 
