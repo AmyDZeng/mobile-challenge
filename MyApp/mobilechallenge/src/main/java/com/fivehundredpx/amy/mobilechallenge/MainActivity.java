@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
         mImageAdapter = new ImageAdapter(this);
         gridview.setAdapter(mImageAdapter);
 
-        getPopularPhotos();
+        getAllPopularPhotos();
 
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
@@ -80,7 +80,7 @@ public class MainActivity extends Activity {
         mImageAdapter.getPhoto(position).updateFullScreenInfo(mFullScreenTextView);
     }
 
-    public void getPopularPhotos() /* throws JSONException */ {
+    public void getAllPopularPhotos() /* throws JSONException */ {
 
         RequestParams params = new RequestParams();
         params.put("consumer_key", "3xpH2xqdDBbJFSAjVuQCIma2RvOyWFOusJvY61RW");
@@ -96,12 +96,13 @@ public class MainActivity extends Activity {
                 // If the response is JSONObject instead of expected JSONArray
                 try {
                     // Parse the response into list of photo objects -- passes that on post to image adapter.
-                    new ParseAndDownloadImageTask().execute(response.getJSONArray("photos"));
-
+                    JSONArray photos = response.getJSONArray("photos");
+                    for (int i = 0; i < photos.length(); i++) {
+                        new ParseAndDownloadImageTask().execute(photos.getJSONObject(i));
+                    }
                 } catch (JSONException e) {
                     System.out.println(DEBUG_JSON + e);
                 }
-
             }
 
             @Override
@@ -123,53 +124,47 @@ public class MainActivity extends Activity {
         });
     }
 
-    private class ParseAndDownloadImageTask extends AsyncTask<JSONArray, Void, ArrayList<Photo>> {
+    private class ParseAndDownloadImageTask extends AsyncTask<JSONObject, Void, Photo> {
 
         public ParseAndDownloadImageTask() {
             // Nothing to do
         }
 
-        protected ArrayList<Photo> doInBackground(JSONArray... photoInfo) {
-            JSONArray photoJSONArray = photoInfo[0];
-            ArrayList<Photo> photos = new ArrayList<>();
+        protected Photo doInBackground(JSONObject... photoInfo) {
+            JSONObject photoJSONObj = photoInfo[0];
+            Photo photo = null;
             Bitmap bitmap;
             String url, name, desc, uploader;
-            JSONObject photoJSONObj;
             int votes;
 
-            for (int i = 0; i < photoJSONArray.length(); i++) {
-                try {
-                    photoJSONObj = photoJSONArray.getJSONObject(i);
+            try {
+                // Bitmap
+                url = photoJSONObj.getString("image_url");
+                InputStream in = new java.net.URL(url).openStream();
+                bitmap = BitmapFactory.decodeStream(in);
+                if (bitmap == null) return null; // TODO: throw exception?
 
-                    // Bitmap
-                    url = photoJSONObj.getString("image_url");
-                    InputStream in = new java.net.URL(url).openStream();
-                    bitmap = BitmapFactory.decodeStream(in);
-                    if (bitmap == null) continue;
+                // Name
+                name = photoJSONObj.isNull("name") ? "" : photoJSONObj.getString("name");
+                // Description
+                desc = photoJSONObj.isNull("description") ? "" : photoJSONObj.getString("description");
+                // Uploader
+                uploader = photoJSONObj.getJSONObject("user").isNull("username") ?
+                        "Anon" : photoJSONObj.getJSONObject("user").getString("username");
+                // Votes
+                votes = photoJSONObj.isNull("votes_count") ? 0 : Integer.parseInt(photoJSONObj.getString("votes_count"));
 
-                    // Name
-                    name = photoJSONObj.isNull("name") ? "" : photoJSONObj.getString("name");
-                    // Description
-                    desc = photoJSONObj.isNull("description") ? "" : photoJSONObj.getString("description");
-                    // Uploader
-                    uploader = photoJSONObj.getJSONObject("user").isNull("username") ?
-                            "Anon" : photoJSONObj.getJSONObject("user").getString("username");
-                    // Votes
-                    votes = photoJSONObj.isNull("votes_count") ? 0 : Integer.parseInt(photoJSONObj.getString("votes_count"));
-
-                    // Create new object here. Add to list
-                    photos.add(new Photo(bitmap, name, desc, uploader, votes));
-                } catch (Exception e) {
-                    Log.e("Error", e.getMessage());
-                    e.printStackTrace();
-                }
+                // Create new object here. Add to list
+                photo = new Photo(bitmap, name, desc, uploader, votes);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
             }
-
-            return photos;
+            return photo;
         }
 
-        protected void onPostExecute(ArrayList<Photo> resultList) {
-            mImageAdapter.set(resultList);
+        protected void onPostExecute(Photo result) {
+            mImageAdapter.add(result); // TODO: null check result, either here or above
             mImageAdapter.notifyDataSetChanged();
             Toast.makeText(getBaseContext(), "Download Complete", Toast.LENGTH_SHORT).show();
         }

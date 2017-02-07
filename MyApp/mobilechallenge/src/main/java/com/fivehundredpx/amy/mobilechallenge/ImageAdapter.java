@@ -31,8 +31,8 @@ public class ImageAdapter extends BaseAdapter {
         mScreenHeight = displayMetrics.heightPixels;
     }
 
-    public void set(ArrayList<Photo> photoList) {
-        mPhotoArray = new ArrayList<Photo>(photoList);
+    public void add(Photo photo) {
+        mPhotoArray.add(photo);
     }
 
     public Bitmap getBitmap(int position) {
