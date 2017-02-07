@@ -67,7 +67,6 @@ public class MainActivity extends FragmentActivity {
         getAllPopularPhotos(1);
     }
 
-    // TODO: re-write this to close view pager
     @Override
     public void onBackPressed() {
         if (mViewPager.getVisibility() == View.GONE) {
@@ -75,7 +74,7 @@ public class MainActivity extends FragmentActivity {
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed();
         } else {
-            // Otherwise, select the previous step.
+            // Otherwise, close the viewpager
             mViewPager.setVisibility(View.GONE);
             mGridview.setSelection(mViewPager.getCurrentItem());
         }
@@ -140,7 +139,7 @@ public class MainActivity extends FragmentActivity {
                 url = photoJSONObj.getString("image_url");
                 InputStream in = new java.net.URL(url).openStream();
                 bitmap = BitmapFactory.decodeStream(in);
-                if (bitmap == null) return null; // TODO: throw exception?
+                if (bitmap == null) throw new Exception("Failed loading Bitmap");
 
                 // Name
                 name = photoJSONObj.isNull("name") ? "" : photoJSONObj.getString("name");
@@ -162,9 +161,11 @@ public class MainActivity extends FragmentActivity {
         }
 
         protected void onPostExecute(Photo result) {
-            mImageAdapter.add(result); // TODO: null check result, either here or above
-            mImageAdapter.notifyDataSetChanged();
-            mPagerAdapter.notifyDataSetChanged(); // Necessary since we're using mImageAdapters data
+            if (result != null) {
+                mImageAdapter.add(result);
+                mImageAdapter.notifyDataSetChanged();
+                mPagerAdapter.notifyDataSetChanged(); // Necessary since we're using mImageAdapters data
+            }
         }
     }
 
@@ -175,7 +176,6 @@ public class MainActivity extends FragmentActivity {
             super(fm);
         }
 
-        // TODO: re-write for infinite scrolling
         @Override
         public Fragment getItem(int position) {
             FullScreenFragment fragment = new FullScreenFragment();
@@ -209,7 +209,6 @@ public class MainActivity extends FragmentActivity {
  * P2:
  *      Truncate excess description text
  *      re-try on load failure
- *      pull larger res images on tap
  * Potential bugs:
  *      atm our grid column width works perf for the LG G4, but since the imageadapter scales images based on screen width and height we might have an issue on other devices.
  */
