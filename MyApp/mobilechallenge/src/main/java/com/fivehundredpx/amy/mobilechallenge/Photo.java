@@ -26,7 +26,7 @@ public class Photo {
         myText += mName;
         myText += "\nBy: " + mUploader;
         myText += "\n" + mDescription;
-        myText += "\n\nVotes: " + mVotes;
+        // myText += "\n\nVotes: " + mVotes;
 
         return myText;
     }
