@@ -38,6 +38,18 @@
             android:layout_weight="1"
             android:enabled="false"
             />
+
+        <TextView
+            android:id="@+id/pageNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:text="1"
+            android:background="@color/black"
+            android:textColor="@color/white"
+            android:gravity="center"
+            />
+
         <Button
             android:id="@+id/rightButton"
             android:layout_width="0dp"

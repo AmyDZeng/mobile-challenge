@@ -16,6 +16,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -41,6 +42,8 @@ public class MainActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private GridView mGridview;
+
+    private TextView mPageNumberTextView;
     private Button mLeftButton;
     private Button mRightButton;
 
@@ -60,7 +63,8 @@ public class MainActivity extends FragmentActivity {
         mImageAdapter = new ImageAdapter(this);
         mGridview.setAdapter(mImageAdapter);
 
-        // Instantiate buttons
+        // Instantiate bottom pagination
+        mPageNumberTextView = (TextView) findViewById(R.id.pageNumber);
         mLeftButton = (Button) findViewById(R.id.leftButton);
         mRightButton = (Button) findViewById(R.id.rightButton);
         mLeftButton.setText("<");
@@ -73,6 +77,7 @@ public class MainActivity extends FragmentActivity {
                 if (mCurrentPage > 1) {
                     setPaginateButtonsEnable(false);
                     mCurrentPage -= 1;
+                    mPageNumberTextView.setText(Integer.toString(mCurrentPage));
                     mImageAdapter.invalidateData();
                     mPagerAdapter.notifyDataSetChanged();
                     getAllPopularPhotos();
@@ -89,6 +94,7 @@ public class MainActivity extends FragmentActivity {
                 if (mCurrentPage < mNumberPages) {
                     setPaginateButtonsEnable(false);
                     mCurrentPage += 1;
+                    mPageNumberTextView.setText(Integer.toString(mCurrentPage));
                     mImageAdapter.invalidateData();
                     mPagerAdapter.notifyDataSetChanged();
                     getAllPopularPhotos();
