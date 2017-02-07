@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -31,12 +32,17 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends FragmentActivity {
 
     private final String DEBUG_JSON = "DEBUG_JSON/";
-    private final int RESULTS_PER_PAGE = 30;
+    private final int RESULTS_PER_PAGE = 5;
+
+    private int mCurrentPage = 1;
+    private int mNumberPages = 1;
 
     private ImageAdapter mImageAdapter;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private GridView mGridview;
+    private Button mLeftButton;
+    private Button mRightButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,43 @@ public class MainActivity extends FragmentActivity {
         mImageAdapter = new ImageAdapter(this);
         mGridview.setAdapter(mImageAdapter);
 
+        // Instantiate buttons
+        mLeftButton = (Button) findViewById(R.id.leftButton);
+        mRightButton = (Button) findViewById(R.id.rightButton);
+        mLeftButton.setText("<");
+        mRightButton.setText(">");
+
+        mLeftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Go back
+                if (mCurrentPage > 1) {
+                    // TODO: need to have data cache -- at least 2 pages ahead of current. When to re-enable button? at end of cache page function ... ?
+                    // mLeftButton.setEnabled(false);
+                    mCurrentPage -= 1;
+                    mImageAdapter.invalidateData();
+                    getAllPopularPhotos();
+                } else {
+                    Toast.makeText(getBaseContext(), "Already at first page", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mRightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Go forward
+                if (mCurrentPage <= mNumberPages) {
+                    // mRightButton.setEnabled(false);
+                    mCurrentPage += 1;
+                    mImageAdapter.invalidateData();
+                    getAllPopularPhotos();
+                } else {
+                    Toast.makeText(getBaseContext(), "Already at last page", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         mGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -64,7 +107,7 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        getAllPopularPhotos(1);
+        getAllPopularPhotos();
     }
 
     @Override
@@ -80,14 +123,14 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    public void getAllPopularPhotos(int pageNum) /* throws JSONException */ {
+    public void getAllPopularPhotos() /* throws JSONException */ {
 
         RequestParams params = new RequestParams();
         params.put("consumer_key", "3xpH2xqdDBbJFSAjVuQCIma2RvOyWFOusJvY61RW");
         params.put("feature", "popular");
         params.put("sort", "created_at");
         params.put("image_size", "4"); // Set to max image size
-        params.put("page", Integer.toString(pageNum));
+        params.put("page", Integer.toString(mCurrentPage));
         params.put("rpp", Integer.toString(RESULTS_PER_PAGE));
         params.put("include_store", "store_download");
         params.put("include_states", "voted");
@@ -99,6 +142,10 @@ public class MainActivity extends FragmentActivity {
                 try {
                     // Parse the response into list of photo objects -- passes that on post to image adapter.
                     JSONArray photos = response.getJSONArray("photos");
+                    // Update total pages. TODO: null check
+                    mNumberPages = response.getInt("total_pages");
+
+                    // Parse and display fetched photos
                     for (int i = 0; i < photos.length(); i++) {
                         new ParseAndDownloadImageTask().execute(photos.getJSONObject(i));
                     }
@@ -206,6 +253,8 @@ public class MainActivity extends FragmentActivity {
  *          *important -- when flipping through viewpager, must move grid up along to accomodate it.
  *
  *          Might want data adapter. If we can't pull from the image adapter properly ...
+ *
+ *          Need to data cache for grid pagination
  * P2:
  *      Truncate excess description text
  *      re-try on load failure

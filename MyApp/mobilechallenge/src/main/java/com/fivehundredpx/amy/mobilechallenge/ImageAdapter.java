@@ -35,6 +35,11 @@ public class ImageAdapter extends BaseAdapter {
         mPhotoArray.add(photo);
     }
 
+    public void invalidateData() {
+        mPhotoArray = new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
     public Bitmap getBitmap(int position) {
         return mPhotoArray.get(position).getBitmap();
     }
