@@ -178,22 +178,11 @@ public class MainActivity extends Activity {
 
 /* TODO list:
  *
- * Need a data manager for pagination
- *
- * create object for photo and data --> hold bitmap
- *  load this info in the asynch task --> don't want to aprse json in the UI thread
- *
- * change adding images from list to single url at a time
- *
- * display information on fullscreen
- * Info we want:
- *      - name --> "name"
- *      - uploader --> "user" json --> "username"
- *      - Votes --> "votes_count"
- *      - caption --> "dexcription"
- *      - optionally: comments
- *
- * control number of images per page
- * Pagination
- * re-try on failure
+ * P1:
+ *      Pagination
+ *          grid and full screen? Probably both
+ *      screen rotation
+ * P2:
+ *      Truncate excess description text
+ *      re-try on load failure
  */

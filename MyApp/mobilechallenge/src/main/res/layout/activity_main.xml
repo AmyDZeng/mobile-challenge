@@ -47,6 +47,7 @@
             android:layout_alignParentLeft="true"
             android:textColor="@color/white"
             android:layout_centerHorizontal="true"
+            android:maxHeight="100dp"
             />
 
     </RelativeLayout>
