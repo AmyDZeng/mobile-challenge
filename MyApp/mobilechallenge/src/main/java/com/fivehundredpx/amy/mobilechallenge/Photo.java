@@ -20,15 +20,15 @@ public class Photo {
         mUploader = uploader;
         mVotes = votes;
     }
-// TODO: mvc?
-    public void updateFullScreenInfo(TextView textView) {
+
+    public String getFullScreenInfo() {
         String myText = "";
         myText += mName;
         myText += "\nBy: " + mUploader;
         myText += "\n" + mDescription;
         myText += "\n\nVotes: " + mVotes;
 
-        textView.setText(myText);
+        return myText;
     }
 
     public Bitmap getBitmap() {
