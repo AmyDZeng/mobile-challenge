@@ -75,6 +75,7 @@ public class MainActivity extends FragmentActivity {
                     mLeftButton.setEnabled(false);
                     mCurrentPage -= 1;
                     mImageAdapter.invalidateData();
+                    mPagerAdapter.notifyDataSetChanged();
                     getAllPopularPhotos();
                 } else {
                     Toast.makeText(getBaseContext(), "Already at first page", Toast.LENGTH_SHORT).show();
@@ -90,6 +91,7 @@ public class MainActivity extends FragmentActivity {
                     mRightButton.setEnabled(false);
                     mCurrentPage += 1;
                     mImageAdapter.invalidateData();
+                    mPagerAdapter.notifyDataSetChanged();
                     getAllPopularPhotos();
                 } else {
                     Toast.makeText(getBaseContext(), "Already at last page", Toast.LENGTH_SHORT).show();
