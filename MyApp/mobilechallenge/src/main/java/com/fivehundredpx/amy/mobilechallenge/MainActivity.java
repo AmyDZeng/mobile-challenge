@@ -31,7 +31,7 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends FragmentActivity {
 
     private final String DEBUG_JSON = "DEBUG_JSON/";
-    private final int RESULTS_PER_PAGE = 18;
+    private final int RESULTS_PER_PAGE = 30;
 
     private ImageAdapter mImageAdapter;
     private ViewPager mViewPager;
@@ -210,4 +210,6 @@ public class MainActivity extends FragmentActivity {
  *      Truncate excess description text
  *      re-try on load failure
  *      pull larger res images on tap
+ * Potential bugs:
+ *      atm our grid column width works perf for the LG G4, but since the imageadapter scales images based on screen width and height we might have an issue on other devices.
  */

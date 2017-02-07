@@ -21,7 +21,7 @@ public class ImageAdapter extends BaseAdapter {
 
     public ImageAdapter(Context c) {
         mContext = c;
-        mPhotoArray = new ArrayList<Photo>();
+        mPhotoArray = new ArrayList<>();
 
         // Grab dimensions
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -63,7 +63,7 @@ public class ImageAdapter extends BaseAdapter {
             imageView = new ImageView(mContext);
             imageView.setLayoutParams(new GridView.LayoutParams(mScreenWidth/3, mScreenWidth/3));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
+            // imageView.setPadding(8, 8, 8, 8);
         } else {
             imageView = (ImageView) convertView;
         }
