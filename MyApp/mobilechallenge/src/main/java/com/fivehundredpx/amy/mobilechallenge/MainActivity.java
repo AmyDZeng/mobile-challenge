@@ -36,6 +36,7 @@ public class MainActivity extends FragmentActivity {
     private ImageAdapter mImageAdapter;
     private ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
+    private GridView mGridview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +50,15 @@ public class MainActivity extends FragmentActivity {
         mViewPager.setAdapter(mPagerAdapter);
 
         // Instantiate gridview and adapter
-        GridView gridview = (GridView) findViewById(R.id.gridview);
+        mGridview = (GridView) findViewById(R.id.gridview);
         mImageAdapter = new ImageAdapter(this);
-        gridview.setAdapter(mImageAdapter);
+        mGridview.setAdapter(mImageAdapter);
 
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 mViewPager.setVisibility(View.VISIBLE);
+                mViewPager.setCurrentItem(position);
             }
         });
 
@@ -73,6 +75,7 @@ public class MainActivity extends FragmentActivity {
         } else {
             // Otherwise, select the previous step.
             mViewPager.setVisibility(View.GONE);
+            mGridview.setSelection(mViewPager.getCurrentItem());
         }
     }
 
@@ -198,7 +201,6 @@ public class MainActivity extends FragmentActivity {
  *          two components:
  *              replace fullscreen imageview with viewpager to page through -- data remains in imageadapter, no need to consolidate into its own manager
  *              add pager icons to bottom of grid -- reload image content
- *          restrict fullscreen pagination to current gridview page of results -- easier? we can build on it later.
  *          *important -- when flipping through viewpager, must move grid up along to accomodate it.
  *
  *          Might want data adapter. If we can't pull from the image adapter properly ...
