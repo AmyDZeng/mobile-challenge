@@ -57,8 +57,10 @@ public class MainActivity extends FragmentActivity {
         mGridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                mViewPager.setVisibility(View.VISIBLE);
+                // We reset viewpager contents so screen won't flash between old fragments
+                mViewPager.setAdapter(mPagerAdapter);
                 mViewPager.setCurrentItem(position);
+                mViewPager.setVisibility(View.VISIBLE);
             }
         });
 
