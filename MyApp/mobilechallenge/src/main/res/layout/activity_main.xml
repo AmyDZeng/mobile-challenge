@@ -32,11 +32,9 @@
             android:id="@+id/leftButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/black"
-            android:textColor="@color/white"
-            android:textSize="25dp"
             android:layout_weight="1"
             android:enabled="false"
+            style="@style/buttonStyle"
             />
 
         <TextView
@@ -48,17 +46,16 @@
             android:background="@color/black"
             android:textColor="@color/white"
             android:gravity="center"
+            android:textSize="20dp"
             />
 
         <Button
             android:id="@+id/rightButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:background="@color/black"
-            android:textColor="@color/white"
-            android:textSize="25dp"
             android:layout_weight="1"
             android:enabled="false"
+            style="@style/buttonStyle"
             />
     </LinearLayout>
 
