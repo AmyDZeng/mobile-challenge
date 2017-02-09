@@ -3,6 +3,7 @@ package com.fivehundredpx.amy.mobilechallenge;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,8 @@ public class FullScreenFragment extends Fragment {
 
         if (textView != null) {
             textView.setText(mPhoto.getFullScreenInfo());
+            // Allows us to scroll through large descriptions
+            textView.setMovementMethod(new ScrollingMovementMethod());
         }
 
         return rootView;

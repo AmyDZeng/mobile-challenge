@@ -28,6 +28,7 @@ android:layout_height="match_parent">
         android:textColor="@color/white"
         android:layout_centerHorizontal="true"
         android:maxHeight="100dp"
+        android:scrollbars = "vertical"
         />
 
 </RelativeLayout>
